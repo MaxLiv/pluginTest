@@ -1,0 +1,69 @@
+
+plugins {
+    id 'groovy'
+    id 'maven'
+    id 'maven-publish'
+}
+
+group 'test'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.gradle'
+            artifactId = 'greeting'
+            version = '1.0'
+
+            from components.java
+        }
+    }
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file://localhost/home/max/.m2/repository")
+
+            pom.project {
+                packaging 'jar'
+                groupId 'org.gradle'
+                artifactId 'greeting'
+                version '1.0'
+
+            }
+        }
+    }
+}
